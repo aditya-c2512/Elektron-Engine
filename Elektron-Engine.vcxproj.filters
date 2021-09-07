@@ -10,10 +10,87 @@
     <Filter Include="App\Shaders">
       <UniqueIdentifier>{0b7be179-7a75-433c-9a26-bc10594797de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GraphicsEngine\WindowSystem">
+      <UniqueIdentifier>{1cc4a94d-22da-43bb-8a9c-5435c98ac073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsEngine\GUI">
+      <UniqueIdentifier>{e62e0483-5117-492e-8860-dd9dc7bae924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsEngine\GUI\Backend">
+      <UniqueIdentifier>{f21d68a6-61f3-4ce4-a76e-f772f66e20db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>GraphicsEngine\WindowSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui.cpp">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui_demo.cpp">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui_draw.cpp">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui_tables.cpp">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\imgui_widgets.cpp">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>GraphicsEngine\GUI\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="include\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>GraphicsEngine\GUI\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="ElektronEngine.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="ElekGFX.cpp">
+      <Filter>GraphicsEngine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Window.h">
+      <Filter>GraphicsEngine\WindowSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imconfig.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imgui_internal.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imstb_rectpack.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imstb_textedit.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\imstb_truetype.h">
+      <Filter>GraphicsEngine\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\backends\imgui_impl_dx12.h">
+      <Filter>GraphicsEngine\GUI\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui\backends\imgui_impl_win32.h">
+      <Filter>GraphicsEngine\GUI\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="ElekGFX.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="ElektronEngine.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>GraphicsEngine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
