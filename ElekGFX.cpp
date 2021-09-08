@@ -15,6 +15,47 @@ ElekGFX::~ElekGFX()
 {
 }
 
+ElekGFX* ElekGFX::GetGFX()
+{
+	return elekGFX;
+}
+
+void ElekGFX::OnResize()
+{
+	FlushCommandQueue();
+	elekCommandList->Reset(elekDirectCmdListAlloc.Get(), nullptr);
+
+	for (int i = 0; i < SwapChainBufferCount; ++i)
+		elekSwapChainBuffer[i].Reset();
+
+	elekDepthStencilBuffer.Reset();
+
+	elekSwapChain->ResizeBuffers(SwapChainBufferCount, mClientWidth, mClientHeight, BackBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
+	CurrBackBuffer = 0;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(elekRTVHeap->GetCPUDescriptorHandleForHeapStart());
+
+	for (UINT i = 0; i < SwapChainBufferCount; i++)
+	{
+		elekSwapChain->GetBuffer(i, IID_PPV_ARGS(&elekSwapChainBuffer[i]));
+
+		//Create Render Target View
+		elekDevice->CreateRenderTargetView(elekSwapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
+		// Next entry in heap.
+		rtvHeapHandle.Offset(1, RTVDescriptorSize);
+
+	}
+}
+
+void ElekGFX::Update()
+{
+}
+
+void ElekGFX::Draw()
+{
+}
+
 void ElekGFX::InitD3D12()
 {
 	//Enable Debug Layer if in Debug Mode.
@@ -61,6 +102,8 @@ void ElekGFX::InitD3D12()
 	//assert(m4xMsaaQuality > 0 && “Unexpected MSAA quality level.”);
 
 	CreateCommandObjects();
+	CreateSwapChain();
+	CreateDescriptorHeaps();
 }
 
 void ElekGFX::CreateCommandObjects()
@@ -122,6 +165,10 @@ void ElekGFX::CreateDescriptorHeaps()
 	dsvHeapDesc.NodeMask = 0;
 
 	elekDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(elekDSVHeap.GetAddressOf()));
+}
+
+void ElekGFX::FlushCommandQueue()
+{
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE ElekGFX::CurrentBackBufferRTV() const

@@ -11,13 +11,13 @@
 #pragma comment(lib, "dxgi.lib")
 
 /*
-* 1. Create the ID3D12Device object using D3D12CreateDevice function.
-* 2. Create an ID3D12Fence object and query descriptor sizes.
-* 3. Check 4X MSAA quality level support.
-* 4. Create the command queue, command list allocator, and main command list.
-* 5. Describe and create the swap chain.
-* 6. Create the descriptor heaps the application requires.
-* 7. Resize the back buffer and create a render target view to the back buffer.
+* 1. Create the ID3D12Device object using D3D12CreateDevice function.					X
+* 2. Create an ID3D12Fence object and query descriptor sizes.							X
+* 3. Check 4X MSAA quality level support.												X
+* 4. Create the command queue, command list allocator, and main command list.			X
+* 5. Describe and create the swap chain.												X
+* 6. Create the descriptor heaps the application requires.								X
+* 7. Resize the back buffer and create a render target view to the back buffer.			X
 * 8. Create the depth/stencil buffer and its associated depth/stencil view.
 * 9. Set the viewport and scissor rectangles.
 */
@@ -28,10 +28,18 @@ public :
 	ElekGFX(HINSTANCE inst, HWND wind);
 	~ElekGFX();
 
+	static ElekGFX* GetGFX();
+
+	void OnResize();
+	void Update();
+	void Draw();
+
 	void InitD3D12();
 	void CreateCommandObjects();
 	void CreateSwapChain();
 	void CreateDescriptorHeaps();
+
+	void FlushCommandQueue();
 	
 protected :
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferRTV() const;

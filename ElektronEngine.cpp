@@ -12,6 +12,9 @@ ElektronEngine::~ElektronEngine()
 void ElektronEngine::onCreate()
 {
 	Window::onCreate();
+
+	//Create ElekGFX
+	//Initialise GFX Engine
 }
 
 void ElektronEngine::onUpdate()
