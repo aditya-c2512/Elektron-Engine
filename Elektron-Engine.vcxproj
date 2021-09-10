@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ElekGFX.cpp" />
+    <ClCompile Include="ElekTimer.cpp" />
     <ClCompile Include="ElektronEngine.cpp" />
     <ClCompile Include="include\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="include\imgui\backends\imgui_impl_win32.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="ElekGFX.h" />
+    <ClInclude Include="ElekTimer.h" />
     <ClInclude Include="ElektronEngine.h" />
     <ClInclude Include="include\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="include\imgui\backends\imgui_impl_win32.h" />

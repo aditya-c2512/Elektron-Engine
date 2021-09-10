@@ -19,6 +19,9 @@
     <Filter Include="GraphicsEngine\GUI\Backend">
       <UniqueIdentifier>{f21d68a6-61f3-4ce4-a76e-f772f66e20db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GraphicsEngine\Timer">
+      <UniqueIdentifier>{81eec0f9-c046-4ba6-aced-206cd897a547}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="ElekGFX.cpp">
       <Filter>GraphicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="ElekTimer.cpp">
+      <Filter>GraphicsEngine\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="d3dx12.h">
       <Filter>GraphicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="ElekTimer.h">
+      <Filter>GraphicsEngine\Timer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

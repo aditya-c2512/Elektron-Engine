@@ -45,8 +45,8 @@ protected :
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferRTV() const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const;
 
-protected :
-	static ElekGFX* elekGFX;
+public :
+	//static ElekGFX* elekGFX;
 
 	HINSTANCE hAppInst = nullptr; // application instance handle
 	HWND hMainWnd = nullptr; // main window handle

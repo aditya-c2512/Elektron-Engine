@@ -4,20 +4,22 @@ using Microsoft::WRL::ComPtr;
 using namespace std;
 //using namespace DirectX;
 
-ElekGFX* ElekGFX::elekGFX = nullptr;
+//ElekGFX* ElekGFX::elekGFX = nullptr;
 
 ElekGFX::ElekGFX(HINSTANCE inst, HWND wind) : hAppInst(inst), hMainWnd(wind)
 {
-	if (elekGFX == nullptr) elekGFX = this;
+	//if (elekGFX == nullptr) elekGFX = this;
 }
 
 ElekGFX::~ElekGFX()
 {
+	if (elekDevice != nullptr)
+		FlushCommandQueue();
 }
 
 ElekGFX* ElekGFX::GetGFX()
 {
-	return elekGFX;
+	return nullptr;
 }
 
 void ElekGFX::OnResize()
@@ -46,6 +48,52 @@ void ElekGFX::OnResize()
 		rtvHeapHandle.Offset(1, RTVDescriptorSize);
 
 	}
+
+	D3D12_RESOURCE_DESC depthStencilDesc;
+	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Alignment = 0;
+	depthStencilDesc.Width = mClientWidth;
+	depthStencilDesc.Height = mClientHeight;
+	depthStencilDesc.DepthOrArraySize = 1;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.Format = DepthStencilFormat;
+	depthStencilDesc.SampleDesc.Count = is4xMsaaState ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = is4xMsaaState ? (elek4xMsaaQuality - 1) : 0;
+	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	D3D12_CLEAR_VALUE optClear;
+	optClear.Format = DepthStencilFormat;
+	optClear.DepthStencil.Depth = 1.0f;
+	optClear.DepthStencil.Stencil = 0;
+
+
+	auto heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	elekDevice->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &depthStencilDesc,
+										D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(elekDepthStencilBuffer.GetAddressOf()));
+
+	elekDevice->CreateDepthStencilView(elekDepthStencilBuffer.Get(), nullptr, DepthStencilView());
+
+	auto resBar = CD3DX12_RESOURCE_BARRIER::Transition(elekDepthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	elekCommandList->ResourceBarrier(1, &resBar);
+
+	elekCommandList->Close();
+	ID3D12CommandList* cmdsList[] = { elekCommandList.Get() };
+	elekCommandQueue->ExecuteCommandLists(_countof(cmdsList), cmdsList);
+
+	FlushCommandQueue();
+
+	elekScreenViewport.TopLeftX = 0;
+	elekScreenViewport.TopLeftY = 0;
+	elekScreenViewport.Width = static_cast<float>(mClientWidth);
+	elekScreenViewport.Height = static_cast<float>(mClientHeight);
+	elekScreenViewport.MinDepth = 0.0f;
+	elekScreenViewport.MaxDepth = 1.0f;
+
+	elekScissorRect = { 0, 0, mClientWidth, mClientHeight };
+
+	elekCommandList->RSSetViewports(1, &elekScreenViewport);
+	elekCommandList->RSSetScissorRects(1, &elekScissorRect);
 }
 
 void ElekGFX::Update()
@@ -54,6 +102,36 @@ void ElekGFX::Update()
 
 void ElekGFX::Draw()
 {
+	elekDirectCmdListAlloc->Reset();
+	elekCommandList->Reset(elekDirectCmdListAlloc.Get(), nullptr);
+
+	auto Barrier = CD3DX12_RESOURCE_BARRIER::Transition(elekSwapChainBuffer[CurrBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	elekCommandList->ResourceBarrier(1, &Barrier);
+
+	elekCommandList->RSSetViewports(1, &elekScreenViewport);
+	elekCommandList->RSSetScissorRects(1, &elekScissorRect);
+
+	FLOAT color[4] = { 0,1,0,1 };
+	elekCommandList->ClearRenderTargetView(CurrentBackBufferRTV(), color, 0, nullptr);
+	elekCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	auto currBackBufferView = CurrentBackBufferRTV();
+	auto depthBufferView = DepthStencilView();
+	elekCommandList->OMSetRenderTargets(1, &currBackBufferView, true, &depthBufferView);
+
+	Barrier = CD3DX12_RESOURCE_BARRIER::Transition(elekSwapChainBuffer[CurrBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	elekCommandList->ResourceBarrier(1, &Barrier);
+
+	elekCommandList->Close();
+
+	ID3D12CommandList* cmdsLists[] = {elekCommandList.Get() };
+	elekCommandQueue -> ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	elekSwapChain->Present(0, 0);
+
+	CurrBackBuffer = (CurrBackBuffer + 1) % SwapChainBufferCount;
+
+	FlushCommandQueue();
 }
 
 void ElekGFX::InitD3D12()
@@ -169,6 +247,18 @@ void ElekGFX::CreateDescriptorHeaps()
 
 void ElekGFX::FlushCommandQueue()
 {
+	CurrentFence++;
+	elekCommandQueue->Signal(elekFence.Get(), CurrentFence);
+
+	if (elekFence->GetCompletedValue() < CurrentFence)
+	{
+		//HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+
+		elekFence->SetEventOnCompletion(CurrentFence, nullptr);
+
+		//WaitForSingleObject(eventHandle, INFINITE);
+		//CloseHandle(eventHandle);
+	}
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE ElekGFX::CurrentBackBufferRTV() const
